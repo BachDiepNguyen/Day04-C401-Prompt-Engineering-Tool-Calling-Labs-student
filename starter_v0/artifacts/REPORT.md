@@ -3,7 +3,7 @@
 ## Team
 
 - Team: Research Agent Lab
-- Members: BachDiepNguyen
+- Members: Nguyễn Bách Điệp - 2A202600535
 - Provider/model: OpenAI `gpt-4o-mini`
 
 ---
