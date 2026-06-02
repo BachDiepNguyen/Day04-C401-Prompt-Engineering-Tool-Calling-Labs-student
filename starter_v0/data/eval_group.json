@@ -1,7 +1,118 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "description": "Case do nhóm tự viết thêm để cover routing, missing info, side-effect confirmation, multi-turn carryover, và 4 bonus tools tự thêm.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_extract_urls_single",
+      "phase": "B",
+      "suite": "group",
+      "query": "Trích tất cả URL trong đoạn này: OpenAI https://openai.com/research/ và arXiv https://arxiv.org/abs/1706.03762",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "url_extract", "args": {}}]},
+      "metadata": {"what_it_tests": "Bonus local tool: explicit URL extraction from pasted text."}
+    },
+    {
+      "id": "G02_source_audit_single",
+      "phase": "B",
+      "suite": "group",
+      "query": "Kiểm tra nguồn này có phù hợp để cite cho thông báo sản phẩm không: https://openai.com/research/",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "source_audit", "args": {"url": "https://openai.com/research/"}}]},
+      "metadata": {"what_it_tests": "Bonus local tool: source/citation audit, not fetch."}
+    },
+    {
+      "id": "G03_glossary_single",
+      "phase": "B",
+      "suite": "group",
+      "query": "Trong lab này, tool calling nghĩa là gì? Tra glossary ngắn gọn thôi.",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "glossary", "args": {}}]},
+      "metadata": {"what_it_tests": "Bonus local glossary lookup for lab concepts."}
+    },
+    {
+      "id": "G04_metric_compare_single",
+      "phase": "B",
+      "suite": "group",
+      "query": "So sánh metric research: tweet A có 1200 views, tweet B có 1800 views, chênh lệch bao nhiêu phần trăm?",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "research_metric_compare", "args": {"value_a": 1200, "value_b": 1800, "metric": "views"}}]},
+      "metadata": {"what_it_tests": "Bonus local metric comparison, not general math homework."}
+    },
+    {
+      "id": "G05_send_requires_confirmation_single",
+      "phase": "B",
+      "suite": "group",
+      "query": "Đăng nội dung này lên Telegram channel giúp mình: AI digest test.",
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"what_it_tests": "Action guardrail: ask for confirmation before Telegram send."}
+    },
+    {
+      "id": "G06_multiturn_missing_handle_then_fill",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Lấy 4 tweet mới nhất giúp mình"},
+        {"role": "user", "content": "Của Sam Altman nhé"},
+        {"role": "user", "content": "Vẫn giữ đúng 4 tweet"}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "sama", "limit": 4}}]},
+      "metadata": {"what_it_tests": "Multi-turn carryover: missing account filled later, preserve limit."}
+    },
+    {
+      "id": "G07_multiturn_missing_url_then_fetch",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt bài này giúp mình"},
+        {"role": "user", "content": "https://openai.com/research/"},
+        {"role": "user", "content": "Chỉ đọc đúng link vừa gửi"}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://openai.com/research/"}}]},
+      "metadata": {"what_it_tests": "Multi-turn URL clarification and exact URL use."}
+    },
+    {
+      "id": "G08_multiturn_switch_social_to_web",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm tweet về GPT-5"},
+        {"role": "user", "content": "Bỏ Twitter đi, chuyển sang web news"},
+        {"role": "user", "content": "Vẫn chủ đề GPT-5 hôm nay"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "GPT-5", "topic": "news", "timeframe": "day"}}]},
+      "metadata": {"what_it_tests": "Multi-turn source switch: do not call social_search after Twitter is dropped."}
+    },
+    {
+      "id": "G09_multiturn_glossary_refine",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Giải thích system prompt trong lab"},
+        {"role": "user", "content": "Dùng glossary nội bộ nhé"},
+        {"role": "user", "content": "Ngắn gọn, chỉ term đó thôi"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "glossary", "args": {"term": "system prompt"}}]},
+      "metadata": {"what_it_tests": "Multi-turn bonus glossary routing with refinement."}
+    },
+    {
+      "id": "G10_multiturn_source_audit_after_url",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Mình muốn kiểm tra một nguồn để cite"},
+        {"role": "user", "content": "Nguồn là https://arxiv.org/abs/1706.03762"},
+        {"role": "user", "content": "Đánh giá cho claim học thuật"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "source_audit", "args": {"url": "https://arxiv.org/abs/1706.03762"}}]},
+      "metadata": {"what_it_tests": "Multi-turn source audit after URL and claim type are supplied."}
+    }
+  ]
 }

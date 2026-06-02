@@ -1,0 +1,797 @@
+{
+  "run_id": "v3_B_group_openai_20260602T193944017601",
+  "version": "v3",
+  "artifact_version": "v3+p4b6186163885+tca4d465a43d4",
+  "prompt_hash": "4b61861638853a47d7d6a996573a38b497a3cacd613c3df0117cc51102549d89",
+  "tools_hash": "ca4d465a43d4ed8a6924e769817505cfc59cd566555c865cb7da7de15ee394d2",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "system_prompt": "C:\\Users\\ADMIN\\Downloads\\04_EXTERNAL_PROJECTS\\22_Nhan-tai-AI\\Day04-C401-Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\Users\\ADMIN\\Downloads\\04_EXTERNAL_PROJECTS\\22_Nhan-tai-AI\\Day04-C401-Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do nhóm tự viết thêm để cover routing, missing info, side-effect confirmation, multi-turn carryover, và 4 bonus tools tự thêm.",
+  "generated_at": "2026-06-02T19:39:44",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 10,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "G01_extract_urls_single",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Bonus local tool: explicit URL extraction from pasted text."
+      },
+      "input": "Trích tất cả URL trong đoạn này: OpenAI https://openai.com/research/ và arXiv https://arxiv.org/abs/1706.03762",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "url_extract",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "url_extract",
+            "args": {
+              "text": "OpenAI https://openai.com/research/ và arXiv https://arxiv.org/abs/1706.03762"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "url_extract",
+          "args": {
+            "text": "OpenAI https://openai.com/research/ và arXiv https://arxiv.org/abs/1706.03762"
+          },
+          "result": {
+            "tool": "extract_urls",
+            "count": 2,
+            "items": [
+              {
+                "url": "https://openai.com/research/",
+                "domain": "openai.com",
+                "scheme": "https"
+              },
+              {
+                "url": "https://arxiv.org/abs/1706.03762",
+                "domain": "arxiv.org",
+                "scheme": "https"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_source_audit_single",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Bonus local tool: source/citation audit, not fetch."
+      },
+      "input": "Kiểm tra nguồn này có phù hợp để cite cho thông báo sản phẩm không: https://openai.com/research/",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "source_audit",
+            "args": {
+              "url": "https://openai.com/research/"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "source_audit",
+            "args": {
+              "url": "https://openai.com/research/",
+              "claim_type": "product announcement"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "source_audit",
+          "args": {
+            "url": "https://openai.com/research/",
+            "claim_type": "product announcement"
+          },
+          "result": {
+            "tool": "audit_source",
+            "domain": "openai.com",
+            "claim_type": "product announcement",
+            "rating": "primary",
+            "guidance": "Good for direct claims about the organization, paper, product, or announcement."
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_glossary_single",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Bonus local glossary lookup for lab concepts."
+      },
+      "input": "Trong lab này, tool calling nghĩa là gì? Tra glossary ngắn gọn thôi.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "glossary",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "glossary",
+            "args": {
+              "term": "tool calling"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "glossary",
+          "args": {
+            "term": "tool calling"
+          },
+          "result": {
+            "tool": "lookup_glossary",
+            "query": "tool calling",
+            "items": [
+              {
+                "term": "tool calling",
+                "definition": "A control-flow pattern where a model emits a structured function call and the application executes the function.",
+                "related": [
+                  "tool schema",
+                  "agent loop",
+                  "guardrail"
+                ]
+              },
+              {
+                "term": "parallel tool calling",
+                "definition": "Calling independent tools in the same round when their inputs do not depend on each other.",
+                "related": [
+                  "merge",
+                  "tool result",
+                  "latency"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_metric_compare_single",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Bonus local metric comparison, not general math homework."
+      },
+      "input": "So sánh metric research: tweet A có 1200 views, tweet B có 1800 views, chênh lệch bao nhiêu phần trăm?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "research_metric_compare",
+            "args": {
+              "value_a": 1200,
+              "value_b": 1800,
+              "metric": "views"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "research_metric_compare",
+            "args": {
+              "label_a": "Tweet A",
+              "value_a": 1200,
+              "label_b": "Tweet B",
+              "value_b": 1800,
+              "metric": "views"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "research_metric_compare",
+          "args": {
+            "label_a": "Tweet A",
+            "value_a": 1200,
+            "label_b": "Tweet B",
+            "value_b": 1800,
+            "metric": "views"
+          },
+          "result": {
+            "tool": "compare_research_metrics",
+            "metric": "views",
+            "baseline": {
+              "label": "Tweet A",
+              "value": 1200
+            },
+            "comparison": {
+              "label": "Tweet B",
+              "value": 1800
+            },
+            "difference": 600,
+            "percent_change": 50.0,
+            "higher_value": "Tweet B"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_send_requires_confirmation_single",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Action guardrail: ask for confirmation before Telegram send."
+      },
+      "input": "Đăng nội dung này lên Telegram channel giúp mình: AI digest test.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có xác nhận gửi nội dung này không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có xác nhận gửi nội dung này không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có xác nhận gửi nội dung này không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multiturn_missing_handle_then_fill",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Multi-turn carryover: missing account filled later, preserve limit."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Lấy 4 tweet mới nhất giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "Của Sam Altman nhé"
+        },
+        {
+          "role": "user",
+          "content": "Vẫn giữ đúng 4 tweet"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 4
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "sama",
+            "items": [
+              {
+                "title": "The OpenAI Foundation is doing a lot of wonderful things.",
+                "summary": "The OpenAI Foundation is doing a lot of wonderful things.\n\nHelping society become resilient to AI is going to be incredibly important. Much more to come here!",
+                "url": "https://x.com/sama/status/2061562575322492937",
+                "source": "@sama",
+                "date": "Mon Jun 01 21:36:34 +0000 2026",
+                "metrics": {
+                  "favorites": 1939,
+                  "retweets": 152,
+                  "views": "282484"
+                }
+              },
+              {
+                "title": "OpenAI Robotics is hiring, looking for exceptional full-stack hardware, ops, systems, and ML engineers to help us progra",
+                "summary": "OpenAI Robotics is hiring, looking for exceptional full-stack hardware, ops, systems, and ML engineers to help us program and manufacture robots that are useful for society.\n\nAI should be able to help people in the physical world. In the short term, we are focused on robots to support skilled workers to build our future infrastructure; in the long term, we imagine everyone having a personal robot doing anything they need.\n\nOur world simulation research program, led by Aditya Ramesh (@model_mechanic), has evolved over the past year into OpenAI Robotics. Progress is rapid, and based on a foundation of co-design between robotics hardware and ML research.\n\nIf you love working hands-on across the robotics stack and want to build the future, please consider joining us. Send an email with your background and evidence of exceptional accomplishment to: robotics-recruiting@openai.com",
+                "url": "https://x.com/sama/status/2061117302528188712",
+                "source": "@sama",
+                "date": "Sun May 31 16:07:13 +0000 2026",
+                "metrics": {
+                  "favorites": 13050,
+                  "retweets": 1034,
+                  "views": "2790647"
+                }
+              },
+              {
+                "title": "We want to help the world get a head start on biodefense:",
+                "summary": "We want to help the world get a head start on biodefense:\n\nhttps://t.co/gDQfOZrLA4",
+                "url": "https://x.com/sama/status/2061101875303530871",
+                "source": "@sama",
+                "date": "Sun May 31 15:05:55 +0000 2026",
+                "metrics": {
+                  "favorites": 1549,
+                  "retweets": 176,
+                  "views": "242480"
+                }
+              },
+              {
+                "title": "RT @thsottiaux: Five million users would agree. Resetting the limits tomorrow morning to celebrate.",
+                "summary": "RT @thsottiaux: Five million users would agree. Resetting the limits tomorrow morning to celebrate.\n\nTime to go /fast",
+                "url": "https://x.com/sama/status/2061097558819356732",
+                "source": "@sama",
+                "date": "Sun May 31 14:48:46 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 378,
+                  "views": "33"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multiturn_missing_url_then_fetch",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Multi-turn URL clarification and exact URL use."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt bài này giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "https://openai.com/research/"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ đọc đúng link vừa gửi"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://openai.com/research/"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://openai.com/research/"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://openai.com/research/"
+          },
+          "result": {
+            "tool": "read_url",
+            "url": "https://openai.com/research/",
+            "items": [
+              {
+                "title": "Research | OpenAI",
+                "url": "https://openai.com/research/",
+                "source": "openai.com",
+                "summary": "Research \\| OpenAI\n\nResearch\n\n# Pioneering research on the path to AGI\n\nWe believe our research will eventually lead to artificial general intelligence, a system that can solve human-level problems. Our mission is to ensure that AGI benefits all of humanity.\n\n[View research index](https://openai.com/research/index/) [Learn about safety](https://openai.com/safety/)\n\n![[2.0] Research > Hero > Media Item](https://downloads.ctfassets.net/kftzwdyauwt9/4FnPiaiJdmc3R04H7kGR4N/8b115455fddf2921431f454f65b6ee22/Research_Hero.png?w=3840&q=90&fm=webp)\n\nFocus areas\n\n### We use Deep Learning to leverage large amounts of data and advanced reasoning to train AI systems for task completion.\n\n### GPT\n\nOpenAI’s GPT series models are fast, versatile, and cost-efficient AI systems designed to understand context, generate content, and reason across text, images, and more.\n\n![Hero Art Card SEO 1x1](https://images.ctfassets.net/kftzwdyauwt9/cut4wyUCuBENXfd5CSI7Z/d934ffb49d8b39abea0bc33bb1a5b916/Hero_Art_Card_SEO_1x1.jpg?w=3840&q=90&fm=webp)\n\n[A new class of intelligence for real work\\\\\n\\\\\nReleaseApr 23, 202612 min read](https://openai.com/index/introducing-gpt-5-5/)\n\n![5.4 Thinking Art Card](https://images.ctfassets.net/kftzwdyauwt9/5HSBM48XFBkni6rNv5CAbR/46fe1d133c1440563245262a5fa59c79/5.4_Thinking_Art_Card.png?w=3840&q=90&fm=webp)\n\n[Our most capable and efficient frontier model for professional work\\\\\n\\\\\nReleaseMar 5, 202616 min read](https://openai.com/index/introducing-gpt-5-4/)\n\n![5.3 Instant Art Card](https://images.ctfassets.net/kftzwdyauwt9/72xhlkMHldxPfwGsZttoiI/3ada2b7e0cdb129d0779fbc8b700a7af/5.3_Instant_Art_Card__1_.png?w=3840&q=90&fm=webp)\n\n[Smoother, more useful everyday conversations\\\\\n\\\\\nReleaseMar 3, 20265 min read](https://openai.com/index/gpt-5-3-instant/)\n\n### o series\n\nOpenAI’s o series models are advanced reasoning AI systems that use chain-of-thought processes to solve complex STEM problems through logical, step-by-step analysis.\n\nYour browser does not support the video tag.\n\n[Our smartest and most capable models to date with full tool access\\\\\n\\\\\nOpenAI o3 and o4-miniApr 16, 202511 min read](https://openai.com/index/introducing-o3-and-o4-mini/)\n\n![o3-mini > cover image](https://images.ctfassets.net/kftzwdyauwt9/BQXodBZ63FtQq6CGcPQQh/955ea49d3cf09e7ad33129d8a81b4087/o3-mini_1.1.png?w=3840&q=90&fm=webp)\n\n[Pushing the frontier of cost-effective reasoning\\\\\n\\\\\nOpenAI o3-miniJan 31, 20256 min read](https://openai.com/index/openai-o3-mini/)\n\n![OpenAI o1](https://images.ctfassets.net/kftzwdyauwt9/6ERYwPGeSFjSDRzD9ZeSZM/8fc12647977085317692108a4116f2e2/o1_1.1.png?w=3840&q=90&fm=webp)\n\n[Learning to reason with LLMs\\\\\n\\\\\nOpenAI o1Sep 12, 20249 min read](https://openai.com/index/learning-to-reason-with-llms/)\n\n### Visual\n\nOur research on generative modeling for images has led to representation models like CLIP, which makes a map between text and images that an AI can read, and DALL-E, a tool for creating vivid images from text descriptions.\n\n![Images 2.0 blog art card](https://images.ctfassets.net/kftzwdyauwt9/7fPF7LU0YzPr5PrlNT6lo3/823a11178d4aac15d4f4260b9fcc490d/Blog_art_card.png?w=3840&q=90&fm=webp)\n\n[A state-of-the-art model that makes precise, immediately usable visuals\\\\\n\\\\\nChatGPT Images 2.0Apr 21, 202611 min read](https://openai.com/index/introducing-chatgpt-images-2-0/)\n\n![Sora 2 research blog cover art 16 x 9](https://images.ctfassets.net/kftzwdyauwt9/1Q8NDmnyavsoPAKDlWpW18/a1f595376097668d1772c9cac40fc8ee/16_x_9____1_.png?w=3840&q=90&fm=webp)\n\n[Physically accurate, realistic, and controllable with synchronized dialogue and sound effects\\\\\n\\\\\nSora 2Sep 30, 20258 min read](https://openai.com/index/sora-2/)\n\nYour browser does not support the video tag.\n\n[A natively multimodal model capable of precise, accurate, photorealistic outputs\\\\\n\\\\\nImage GenerationMar 25, 20256 min read](https://openai.com/index/introducing-4o-image-generation/)\n\n### Audio\n\nOur research on applying AI to audio processing and audio generation has led to d"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multiturn_switch_social_to_web",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Multi-turn source switch: do not call social_search after Twitter is dropped."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tweet về GPT-5"
+        },
+        {
+          "role": "user",
+          "content": "Bỏ Twitter đi, chuyển sang web news"
+        },
+        {
+          "role": "user",
+          "content": "Vẫn chủ đề GPT-5 hôm nay"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "GPT-5",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "GPT-5",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "GPT-5",
+            "topic": "news",
+            "timeframe": "day"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "GPT-5",
+            "topic": "news",
+            "timeframe": "day",
+            "items": [
+              {
+                "title": "Using Purpose-Built AI For Mental Health To Protect You From Questionable Psychological Advice By Ordinary AI Chatbots - Forbes",
+                "url": "https://www.forbes.com/sites/lanceeliot/2026/06/02/using-purpose-built-ai-for-mental-health-to-protect-you-from-questionable-psychological-advice-by-ordinary-ai-chatbots/",
+                "source": "forbes.com",
+                "summary": "# Using Purpose-Built AI For Mental Health To Protect You From Questionable Psychological Advice By Ordinary AI Chatbots. In today’s column, I examine the emerging use of purpose-built AI for mental health in its notable capacity to review and double-check mental health advice generated by general-purpose AI (ordinary AI chatbots). People are getting quick snippets of psychological guidance from popular AI chatbots such as ChatGPT, GPT-5, Claude, Grok, CoPilot, Gemini, etc., but are beginning to realize that this general-purpose AI isn’t built to provide bona fide mental health advice. My prediction is that we will see a gradual habit formed of users getting a fast dip into mental health advice from general-purpose AI and then switching over to a purpose-built AI that will review the given advice, provide an in-depth analysis, and produce more robust mental health guidance, along with serving as a long-term advisor rather than a hit-or-miss counselor.",
+                "score": 0.4959723
+              },
+              {
+                "title": "OpenAI offers rival AI to UK banks blocked from Claude Mythos - BBC",
+                "url": "https://www.bbc.com/news/articles/cm2p3j6lvn7o",
+                "source": "bbc.com",
+                "summary": "OpenAI has offered nine major UK banks access to its cyber security AI tool GPT-5.5 Cyber, as its fierce rival Anthropic has blocked them in previews of its version, Claude Mythos. Both tools are designed to find hidden security weaknesses in digital systems and can outperform humans at some hacking and cyber-security tasks. Some finance ministers, central bankers and financiers have since expressed serious concerns about it, fearing the model could undermine the security of all financial systems. The AI Security Institute, which has tested both Anthropic's Mythos and OpenAI's GPT-5.5 Cyber, said in its report that they reached \"a similar level of performance\" in the tasks it set them. The UK banks which will now gain access to OpenAI's GPT 5.5 Cyber include Lloyds Banking Group, HSBC and Nationwide. OpenAI has been more generous with access to Cyber 5.5, opening it up in the EU and also to banks in Japan and Canada, among others.",
+                "score": 0.33561262
+              },
+              {
+                "title": "Charlie Kirk murder suspect's preliminary hearing will be open to public, judge rules - CBS News",
+                "url": "https://www.cbsnews.com/video/charlie-kirk-murder-suspect-preliminary-hearing-open-public-judge/",
+                "source": "cbsnews.com",
+                "summary": "Image 42: 5/31/2026: Germany Rearms; Freezing the Biological Clock ### 5/31/2026: Germany Rearms; Freezing the Biological Clock 42:19 18h agoImage 43: 5/31: CBS Weekend News ### 5/31: CBS Weekend News 20:11 23h agoImage 44: 5/31: Sunday Morning ### 5/31: Sunday Morning 01:01:59 May 31, 2026Image 45: 5/31: Face The Nation ### 5/31: Face The Nation 45:59 May 31, 2026Image 46: Deputy Spivey on Trial ### Deputy Spivey on Trial 42:05 May 31, 2026Image 47: 5/30: CBS Weekend News ### 5/30: CBS Weekend News 20:56 May 30, 2026Image 48: 5/30: Saturday Morning ### 5/30: Saturday Morning 01:16:24 May 30, 2026Image 49: 5/29: The Takeout with Major Garrett ### 5/29: The Takeout with Major Garrett 44:10 May 30, 2026Image 50: 5/29: CBS Evening News ### 5/29: CBS Evening News 19:50 May 29, 2026Image 51: 5/28: The Takeout with Major Garrett ### 5/28: The Takeout with Major Garrett 44:18 May 28, 2026Image 52: 5/28: CBS Evening News ### 5/28: CBS Evening News 19:52 May 28, 2026Image 53: 5/27: CBS Evening News ### 5/27: CBS Evening News 19:58 May 28, 2026Image 54: 5/27: The Takeout with Major Garrett ### 5/27: The Takeout with Major Garrett 44:11 May 27, 2026Image 55: 5/26: The Takeout with Major Garrett ### 5/26: The Takeout with Major Garrett 43:51 May 26, 2026Image 56: 5/25: CBS Evening News ### 5/25: CBS Evening News 19:41 May 25, 2026Image 57: 5/24/2026: Booms, Busts and Bubbles; Sculpting Evolution; The Payam Method ### 5/24/2026: Booms, Busts and Bubbles; Sculpting Evolution; The Payam Method 43:38 May 25, 2026Image 58: 5/24: Face The Nation ### 5/24: Face The Nation 45:33 May 24, 2026Image 59: Kouri Richins: Behind the Facade ### Kouri Richins: Behind the Facade 42:02 May 24, 2026Image 60: 5/22: The Takeout with Major Garrett ### 5/22: The Takeout with Major Garrett 43:36 May 22, 2026Image 61: 5/21: The Takeout with Major Garrett ### 5/21: The Takeout with Major Garrett 43:36 May 21, 2026Image 62:",
+                "score": 0.059718315
+              },
+              {
+                "title": "From the archives: Marilyn Monroe, according to those who knew her best - CBS News",
+                "url": "https://www.cbsnews.com/video/archives-marilyn-monroe-according-to-those-who-knew-her-best/",
+                "source": "cbsnews.com",
+                "summary": "Image 42: 6/1: The Takeout with Major Garrett ### 6/1: The Takeout with Major Garrett 44:02 4h agoImage 43: 6/1: CBS Evening News ### 6/1: CBS Evening News 19:54 4h agoImage 44: 5/31/2026: Germany Rearms; Freezing the Biological Clock ### 5/31/2026: Germany Rearms; Freezing the Biological Clock 42:19 23h agoImage 45: 5/31: CBS Weekend News ### 5/31: CBS Weekend News 20:11 May 31, 2026Image 46: 5/31: Sunday Morning ### 5/31: Sunday Morning 01:01:59 May 31, 2026Image 47: 5/31: Face The Nation ### 5/31: Face The Nation 45:59 May 31, 2026Image 48: Deputy Spivey on Trial ### Deputy Spivey on Trial 42:05 May 31, 2026Image 49: 5/30: CBS Weekend News ### 5/30: CBS Weekend News 20:56 May 30, 2026Image 50: 5/30: Saturday Morning ### 5/30: Saturday Morning 01:16:24 May 30, 2026Image 51: 5/29: The Takeout with Major Garrett ### 5/29: The Takeout with Major Garrett 44:10 May 30, 2026Image 52: 5/29: CBS Evening News ### 5/29: CBS Evening News 19:50 May 29, 2026Image 53: 5/28: The Takeout with Major Garrett ### 5/28: The Takeout with Major Garrett 44:18 May 28, 2026Image 54: 5/28: CBS Evening News ### 5/28: CBS Evening News 19:52 May 28, 2026Image 55: 5/27: CBS Evening News ### 5/27: CBS Evening News 19:58 May 28, 2026Image 56: 5/27: The Takeout with Major Garrett ### 5/27: The Takeout with Major Garrett 44:11 May 27, 2026Image 57: 5/26: The Takeout with Major Garrett ### 5/26: The Takeout with Major Garrett 43:51 May 26, 2026Image 58: 5/24/2026: Booms, Busts and Bubbles; Sculpting Evolution; The Payam Method ### 5/24/2026: Booms, Busts and Bubbles; Sculpting Evolution; The Payam Method 43:38 May 25, 2026Image 59: 5/24: Face The Nation ### 5/24: Face The Nation 45:33 May 24, 2026Image 60: Kouri Richins: Behind the Facade ### Kouri Richins: Behind the Facade 42:02 May 24, 2026Image 61: 5/22: The Takeout with Major Garrett ### 5/22: The Takeout with Major Garrett 43:36 May 22, 2026Image 62: 5/21:",
+                "score": 0.051486712
+              },
+              {
+                "title": "Winnie Harlow on why she centered her new children's book around self-confidence - CBS News",
+                "url": "https://www.cbsnews.com/video/winnie-harlow-on-why-she-centered-her-new-childrens-book-around-self-confidence/",
+                "source": "cbsnews.com",
+                "summary": "Image 42: 5/31/2026: Germany Rearms; Freezing the Biological Clock ### 5/31/2026: Germany Rearms; Freezing the Biological Clock 42:19 12h agoImage 43: 5/31: CBS Weekend News ### 5/31: CBS Weekend News 20:11 17h agoImage 44: 5/31: Sunday Morning ### 5/31: Sunday Morning 01:01:59 May 31, 2026Image 45: 5/31: Face The Nation ### 5/31: Face The Nation 45:59 May 31, 2026Image 46: Deputy Spivey on Trial ### Deputy Spivey on Trial 42:05 May 31, 2026Image 47: 5/30: CBS Weekend News ### 5/30: CBS Weekend News 20:56 May 30, 2026Image 48: 5/30: Saturday Morning ### 5/30: Saturday Morning 01:16:24 May 30, 2026Image 49: 5/29: The Takeout with Major Garrett ### 5/29: The Takeout with Major Garrett 44:10 May 30, 2026Image 50: 5/29: CBS Evening News ### 5/29: CBS Evening News 19:50 May 29, 2026Image 51: 5/28: The Takeout with Major Garrett ### 5/28: The Takeout with Major Garrett 44:18 May 28, 2026Image 52: 5/28: CBS Evening News ### 5/28: CBS Evening News 19:52 May 28, 2026Image 53: 5/27: CBS Evening News ### 5/27: CBS Evening News 19:58 May 28, 2026Image 54: 5/27: The Takeout with Major Garrett ### 5/27: The Takeout with Major Garrett 44:11 May 27, 2026Image 55: 5/26: The Takeout with Major Garrett ### 5/26: The Takeout with Major Garrett 43:51 May 26, 2026Image 56: 5/25: CBS Evening News ### 5/25: CBS Evening News 19:41 May 25, 2026Image 57: 5/24/2026: Booms, Busts and Bubbles; Sculpting Evolution; The Payam Method ### 5/24/2026: Booms, Busts and Bubbles; Sculpting Evolution; The Payam Method 43:38 May 25, 2026Image 58: 5/24: Face The Nation ### 5/24: Face The Nation 45:33 May 24, 2026Image 59: Kouri Richins: Behind the Facade ### Kouri Richins: Behind the Facade 42:02 May 24, 2026Image 60: 5/22: The Takeout with Major Garrett ### 5/22: The Takeout with Major Garrett 43:36 May 22, 2026Image 61: 5/21: The Takeout with Major Garrett ### 5/21: The Takeout with Major Garrett 43:36 May 21, 2026Image 62:",
+                "score": 0.046625108
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_multiturn_glossary_refine",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Multi-turn bonus glossary routing with refinement."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Giải thích system prompt trong lab"
+        },
+        {
+          "role": "user",
+          "content": "Dùng glossary nội bộ nhé"
+        },
+        {
+          "role": "user",
+          "content": "Ngắn gọn, chỉ term đó thôi"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "glossary",
+            "args": {
+              "term": "system prompt"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "glossary",
+            "args": {
+              "term": "system prompt"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "glossary",
+          "args": {
+            "term": "system prompt"
+          },
+          "result": {
+            "tool": "lookup_glossary",
+            "query": "system prompt",
+            "items": [
+              {
+                "term": "prompt engineering",
+                "definition": "The practice of writing instructions, context, constraints, and examples so a model behaves reliably.",
+                "related": [
+                  "system prompt",
+                  "few-shot",
+                  "tool schema"
+                ]
+              },
+              {
+                "term": "system prompt",
+                "definition": "The highest-priority instruction layer that defines the agent role, rules, boundaries, and output contract.",
+                "related": [
+                  "policy",
+                  "boundary",
+                  "output contract"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multiturn_source_audit_after_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Multi-turn source audit after URL and claim type are supplied."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Mình muốn kiểm tra một nguồn để cite"
+        },
+        {
+          "role": "user",
+          "content": "Nguồn là https://arxiv.org/abs/1706.03762"
+        },
+        {
+          "role": "user",
+          "content": "Đánh giá cho claim học thuật"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "source_audit",
+            "args": {
+              "url": "https://arxiv.org/abs/1706.03762"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "source_audit",
+            "args": {
+              "url": "https://arxiv.org/abs/1706.03762",
+              "claim_type": "academic"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "source_audit",
+          "args": {
+            "url": "https://arxiv.org/abs/1706.03762",
+            "claim_type": "academic"
+          },
+          "result": {
+            "tool": "audit_source",
+            "domain": "arxiv.org",
+            "claim_type": "academic",
+            "rating": "primary",
+            "guidance": "Good for direct claims about the organization, paper, product, or announcement."
+          }
+        }
+      ]
+    }
+  ]
+}

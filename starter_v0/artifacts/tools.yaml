@@ -9,51 +9,51 @@
 tools:
   # ---------------- Core tools ----------------
   - name: clarify
-    description: "Gửi một câu hỏi cho người dùng."
+    description: "Ask the user exactly one concise follow-up question when required information is missing or when an action needs confirmation. Use instead of guessing missing handles, URLs, topics, or send confirmation."
     parameters:
       type: object
       properties:
         question: {type: string, default: "", description: "Câu hỏi"}
         response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Kiểu trả lời"}
         options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn"}
-      required: [question]
+      required: [question, response_type]
 
   - name: timeline
-    description: "Lấy các bài đăng gần đây."
+    description: "Get recent posts/tweets FROM one specific X/Twitter account. Use when the user asks for tweets by a named person/account, e.g. Sam Altman -> sama, Elon Musk -> elonmusk, Andrej Karpathy -> karpathy. Do NOT use when the account is missing; call clarify instead. Do NOT use for tweets ABOUT a topic; use social_search."
     parameters:
       type: object
       properties:
-        screenname: {type: string, default: "", description: "Tên tài khoản"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
+        screenname: {type: string, default: "", description: "X/Twitter handle without @, e.g. sama, elonmusk, karpathy. Required; do not guess unrelated accounts."}
+        limit: {type: integer, default: 5, description: "Number of recent posts requested by the user. Use 5 unless the user specifies another number."}
       required: [screenname]
 
   - name: social_search
-    description: "Tìm trên mạng xã hội."
+    description: "Search X/Twitter posts ABOUT a topic or keyword. Use for 'mọi người đang bàn gì về ...', 'tweets about ...', or 'top/popular tweets about ...'. Do NOT use for 'latest tweets' when no account or topic is provided; call clarify."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Từ khóa"}
-        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Cách sắp xếp"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
+        query: {type: string, default: "", description: "Core topic/keyword to search for, e.g. OpenAI, GPT-5, AI."}
+        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Use Top only when the user asks for top/popular/phổ biến posts; otherwise Latest."}
+        limit: {type: integer, default: 5, description: "Number of posts to return."}
       required: [query]
 
   - name: lookup
-    description: "Tra cứu thông tin trên internet."
+    description: "Search the public web. Use topic=news for current news requests. Use timeframe=day for hôm nay/today and timeframe=week for tuần này/this week. Keep query as the core topic only, e.g. AI not AI news."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Truy vấn"}
-        topic: {type: string, enum: [general, news], default: "general", description: "Phân loại"}
-        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Khoảng thời gian"}
-        max_results: {type: integer, default: 5, description: "Số kết quả"}
+        query: {type: string, default: "", description: "Core search topic. Do not append words like news if topic=news already captures that."}
+        topic: {type: string, enum: [general, news], default: "general", description: "Use news for current/news requests; general for non-news web lookup."}
+        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "day=today/hôm nay, week=this week/tuần này, month=this month/recent month, year=this year."}
+        max_results: {type: integer, default: 5, description: "Number of web results."}
       required: [query]
 
   - name: fetch
-    description: "Lấy nội dung từ một địa chỉ."
+    description: "Read and extract content from one explicit URL supplied by the user. Do NOT guess URLs. If the user says 'this article/page/link' without a URL, call clarify."
     parameters:
       type: object
       properties:
-        url: {type: string, default: "", description: "Địa chỉ"}
+        url: {type: string, default: "", description: "The exact URL provided by the user."}
       required: [url]
 
   - name: format
@@ -79,7 +79,7 @@ tools:
 
   # ---------------- Bonus tools ----------------
   - name: send
-    description: "Gửi một đoạn văn bản đi."
+    description: "Send text to the configured Telegram channel. This has a real side effect. A bare request to send/post/publish is NOT confirmation. Use only after an explicit affirmative confirmation such as 'có', 'yes', or 'xác nhận gửi' after a yes/no confirmation question, or when the same message clearly says 'tôi xác nhận gửi'. If not confirmed, call clarify with response_type=yes_no instead."
     parameters:
       type: object
       properties:
@@ -88,12 +88,12 @@ tools:
       required: [text]
 
   - name: policy
-    description: "Tìm trong tài liệu nội bộ."
+    description: "Search internal company policy markdown. Use for questions about company rules, allowed sources, source citation, data privacy, external publishing, Telegram approval, research workflow, or tool usage. Map source/citation/trích dẫn/tweet-as-fact to source_citation; API keys/customer data/secrets to data_privacy; publishing/Telegram approval to external_publishing; research workflow to ai_research; tool permissions to tool_usage."
     parameters:
       type: object
       properties:
         query: {type: string, default: "", description: "Truy vấn"}
-        policy_area: {type: string, enum: [all, ai_research, source_citation, data_privacy, external_publishing, tool_usage], default: "all", description: "Nhóm"}
+        policy_area: {type: string, enum: [all, ai_research, source_citation, data_privacy, external_publishing, tool_usage], default: "all", description: "Policy area. Prefer a specific area when the user gives a clear clue: source_citation, data_privacy, external_publishing, ai_research, or tool_usage."}
         top_k: {type: integer, default: 3, description: "Số mục"}
       required: [query]
 
@@ -116,3 +116,44 @@ tools:
         max_pages: {type: integer, default: 5, description: "Số trang"}
         max_chars: {type: integer, default: 8000, description: "Số ký tự"}
       required: [arxiv_url]
+
+  # ---------------- Team bonus tools ----------------
+  - name: url_extract
+    description: "Extract explicit HTTP/HTTPS URLs from pasted text and return URL/domain metadata. Use only when the user asks to extract, list, or inspect URLs from provided text. Do NOT use to read a URL; use fetch for reading."
+    parameters:
+      type: object
+      properties:
+        text: {type: string, default: "", description: "Text that may contain one or more URLs."}
+        max_urls: {type: integer, default: 20, description: "Maximum URLs to return."}
+      required: [text]
+
+  - name: source_audit
+    description: "Classify a cited URL/domain as primary, social, secondary, or unknown and give citation guidance. Use only when the user asks whether a source is suitable/reliable for citation. Do NOT use for general web search."
+    parameters:
+      type: object
+      properties:
+        url: {type: string, default: "", description: "URL to audit, if available."}
+        source: {type: string, default: "", description: "Domain or source name to audit if no URL is available."}
+        claim_type: {type: string, default: "general", description: "Type of claim being supported, e.g. product announcement, social signal, academic claim."}
+      required: []
+
+  - name: glossary
+    description: "Look up concise local definitions for prompt-engineering and tool-calling concepts from this lab. Use only when the user asks for a lab concept definition, not for current news or general research."
+    parameters:
+      type: object
+      properties:
+        term: {type: string, default: "", description: "Prompt/tool concept to define, e.g. system prompt, tool calling, prompt injection."}
+        top_k: {type: integer, default: 3, description: "Maximum matching glossary entries."}
+      required: [term]
+
+  - name: research_metric_compare
+    description: "Compare two numeric research or social metrics such as tweet views, result counts, citations, or engagement. Use only for research metrics, not for math homework or coding tasks."
+    parameters:
+      type: object
+      properties:
+        label_a: {type: string, default: "A", description: "Label for the baseline item."}
+        value_a: {type: number, default: 0, description: "Numeric value for the baseline item."}
+        label_b: {type: string, default: "B", description: "Label for the comparison item."}
+        value_b: {type: number, default: 0, description: "Numeric value for the comparison item."}
+        metric: {type: string, default: "value", description: "Metric name, e.g. views, retweets, citations."}
+      required: [label_a, value_a, label_b, value_b, metric]
