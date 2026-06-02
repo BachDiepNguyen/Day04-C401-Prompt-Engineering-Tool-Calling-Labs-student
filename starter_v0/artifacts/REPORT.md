@@ -14,7 +14,16 @@
 
 Research Agent dung tool that de tim tin web/news, doc URL, tim bai dang X/Twitter, tra cuu paper arXiv, kiem tra policy noi bo, dinh dang digest va gui Telegram khi da duoc xac nhan ro rang. Agent duoc toi uu bang eval log that qua cac version `v0` -> `v3`.
 
-**Link dung thu UI:** http://localhost:8501
+**Link dung thu UI:** local only - `http://localhost:8501`
+
+Neu can public demo link cho team khac, chay:
+
+```bash
+streamlit run app.py
+cloudflared tunnel --url http://localhost:8501
+```
+
+Sau do thay dong nay bang URL `https://<random>.trycloudflare.com` ma Cloudflare tra ve. Link tunnel la tam thoi va chi song khi lenh `cloudflared` con chay.
 
 Poster demo: `artifacts/poster.html`
 
@@ -108,7 +117,7 @@ Transcript: `transcripts/v3_openai_20260602T194103053936.transcript.json`
 
 | Bonus | Evidence File | What Worked | Risk / Guardrail |
 |---|---|---|---|
-| UI | `app.py` | Streamlit UI runs at `http://localhost:8501` | Uses same prompt/tools and OpenAI model |
+| UI | `app.py` | Streamlit UI runs locally at `http://localhost:8501`; public demo can be exposed with Cloudflare Tunnel | Uses same prompt/tools and OpenAI model |
 | More than 3 new tools | `tools/url_extract`, `tools/source_audit`, `tools/glossary`, `tools/research_metric_compare` | 4 tools added with `TOOL.md`, registry, and `tools.yaml` | Narrow descriptions avoid base routing regression |
 | send Telegram | base/group eval + live transcript | Agent asks confirmation before send; code requires `confirmed=true` | Side-effect tool guarded by prompt and implementation |
 | policy/arXiv | extension eval | `policy`, `papers`, `paper_text` route correctly | Policy area mapping added in v3 |
